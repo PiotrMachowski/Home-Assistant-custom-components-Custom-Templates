@@ -51,22 +51,18 @@ This function returns translated state of an entity.
   </tr>
   <tr>
     <td>
-    
-    ```yaml
-    State: {{ states("sun.sun") }}
-    Translated en: {{ ct_state_translated("sun.sun", "en") }}
-    Translated nl: {{ ct_state_translated("sun.sun", "nl") }}
-    ```
-
+      <pre>
+State: {{ states("sun.sun") }}
+Translated en: {{ ct_state_translated("sun.sun", "en") }}
+Translated nl: {{ ct_state_translated("sun.sun", "nl") }}
+      </pre>
     </td>
     <td>
-    
-    ```yaml
-    State: below_horizon
-    Translated en: Below horizon
-    Translated nl: Onder de horizon
-    ```
-
+      <pre>
+State: below_horizon
+Translated en: Below horizon
+Translated nl: Onder de horizon
+      </pre>
     </td>
   </tr>
 </table>
@@ -86,21 +82,17 @@ This function evaluates text as a template.
   </tr>
   <tr>
     <td>
-    
-    ```yaml
-    {% set template_text = "{{ states('sun.sun') }}" %}
-    {{ ct_eval(template_text) }}
-    {{ template_text | ct_eval }}
-    ```
-
+      <pre>
+{% set template_text = "{{ states('sun.sun') }}" %}
+{{ ct_eval(template_text) }}
+{{ template_text | ct_eval }}
+      </pre>
     </td>
-    <td>
-    
-    ```yaml
-    below_horizon
-    below_horizon
-    ```
-
+    <td> 
+      <pre>
+below_horizon
+below_horizon
+      </pre>
     </td>
   </tr>
 </table>
