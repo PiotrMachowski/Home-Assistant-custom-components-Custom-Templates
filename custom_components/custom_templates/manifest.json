@@ -7,5 +7,6 @@
   "requirements": [],
   "codeowners": [
     "@PiotrMachowski"
-  ]
+  ],
+  "iot_class": "calculated"
 }
