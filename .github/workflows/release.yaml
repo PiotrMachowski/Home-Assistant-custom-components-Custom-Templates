@@ -1,0 +1,27 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  release:
+    name: Prepare release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download repo
+        uses: actions/checkout@v1
+
+      - name: Zip custom_templates dir
+        run: |
+          cd /home/runner/work/Home-Assistant-custom-components-Custom-Templates/Home-Assistant-custom-components-Custom-Templates/custom_components/custom_templates
+          zip custom_templates.zip -r ./
+
+      - name: Upload zip to release
+        uses: svenstaro/upload-release-action@v1-release
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: /home/runner/work/Home-Assistant-custom-components-Custom-Templates/Home-Assistant-custom-components-Custom-Templates/custom_components/custom_templates/custom_templates.zip
+          asset_name: custom_templates.zip
+          tag: ${{ github.ref }}
+          overwrite: true
