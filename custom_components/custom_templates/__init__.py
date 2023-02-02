@@ -3,8 +3,9 @@ from collections import ChainMap
 import logging
 
 from homeassistant.exceptions import TemplateError
-from homeassistant.const import EVENT_HOMEASSISTANT_STARTED, STATE_UNKNOWN
+from homeassistant.const import EVENT_COMPONENT_LOADED, STATE_UNKNOWN
 from homeassistant.core import Event, HomeAssistant, valid_entity_id
+from homeassistant.helpers.entity_registry import async_get
 from homeassistant.helpers.template import _get_state_if_valid, _RESERVED_NAMES, Template, TemplateEnvironment
 from homeassistant.helpers.translation import _TranslationCache, TRANSLATION_FLATTEN_CACHE, TRANSLATION_LOAD_LOCK
 from homeassistant.loader import bind_hass
@@ -36,14 +37,27 @@ class StateTranslated:
 
         if state is None:
             return STATE_UNKNOWN
+        entry = async_get(self._hass).async_get(entity_id)
+        translations = []
+        key = ""
+        if (entry is not None and
+                entry.unique_id is not None and
+                hasattr(entry, "translation_key") and
+                entry.translation_key is not None):
+            key = f"component.{entry.platform}.entity.{state.domain}.{entry.translation_key}.state.{state.state}"
+            translations = get_cached_translations(self._hass, language, "entity")
+        if len(translations) > 0 and key in translations:
+            return str(translations[key])
+
         domain = state.domain
         device_class = "_"
         if "device_class" in state.attributes:
             device_class = state.attributes["device_class"]
-        translations = get_cached_translations(self._hass, language, "state", domain)
         key = f"component.{domain}.state.{device_class}.{state.state}"
+        translations = get_cached_translations(self._hass, language, "state", state.domain)
         if len(translations) > 0 and key in translations:
             return str(translations[key])
+        _LOGGER.warning(f"No translation found for entity: f{entity_id}")
         return state.state
 
     def __repr__(self):
@@ -80,9 +94,15 @@ async def load_translations_to_cache(
 ):
     lock = hass.data.setdefault(TRANSLATION_LOAD_LOCK, asyncio.Lock())
 
+    components_entities = {
+        component for component in hass.config.components if "." not in component
+    }
+    components_state = set(hass.config.components)
+
     async with lock:
         cache = hass.data.setdefault(TRANSLATION_FLATTEN_CACHE, _TranslationCache(hass))
-        await cache.async_fetch(language, "states", set(hass.config.components))
+        await cache.async_fetch(language, "entity", components_entities)
+        await cache.async_fetch(language, "states", components_state)
 
 
 @bind_hass
@@ -117,7 +137,7 @@ def setup(hass, config):
             for language in languages:
                 await load_translations_to_cache(hass, language)
 
-        hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STARTED, load_translations)
+        hass.bus.async_listen(EVENT_COMPONENT_LOADED, load_translations)
 
     _TranslationCache.get_cached = get_cached
 
