@@ -11,7 +11,8 @@ from homeassistant.helpers.translation import _TranslationCache, TRANSLATION_FLA
 from homeassistant.loader import bind_hass
 
 from .const import (DOMAIN, CUSTOM_TEMPLATES_SCHEMA, CONF_PRELOAD_TRANSLATIONS, CONST_EVAL_FUNCTION_NAME,
-                    CONST_STATE_TRANSLATED_FUNCTION_NAME)
+                    CONST_STATE_TRANSLATED_FUNCTION_NAME, CONST_TRANSLATED_FUNCTION_NAME,
+                    CONST_ALL_TRANSLATIONS_FUNCTION_NAME)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -20,10 +21,13 @@ CONFIG_SCHEMA = CUSTOM_TEMPLATES_SCHEMA
 
 class StateTranslated:
 
-    def __init__(self, hass: HomeAssistant):
+    def __init__(self, hass: HomeAssistant, available_languages):
         self._hass = hass
+        self._available_languages = available_languages
 
     def __call__(self, entity_id: str, language: str):
+        if language not in self._available_languages:
+            return f"Language {language} is not loaded"
         state = None
         if "." in entity_id:
             state = _get_state_if_valid(self._hass, entity_id)
@@ -62,6 +66,47 @@ class StateTranslated:
 
     def __repr__(self):
         return "<template StateTranslated>"
+
+
+class Translated:
+
+    def __init__(self, hass: HomeAssistant, available_languages):
+        self._hass = hass
+        self._available_languages = available_languages
+
+    def __call__(self, key: str, language: str):
+        if language not in self._available_languages:
+            return f"Language {language} is not loaded"
+
+        translations = get_cached_translations(self._hass, language, "state")
+        if len(translations) > 0 and key in translations:
+            return str(translations[key])
+        translations = get_cached_translations(self._hass, language, "entity")
+        if len(translations) > 0 and key in translations:
+            return str(translations[key])
+        _LOGGER.warning(f"No translation found for key: f{key}")
+        return key
+
+    def __repr__(self):
+        return "<template Translated>"
+
+
+class AllTranslations:
+
+    def __init__(self, hass: HomeAssistant, available_languages):
+        self._hass = hass
+        self._available_languages = available_languages
+
+    def __call__(self, language: str):
+        if language not in self._available_languages:
+            return f"Language {language} is not loaded"
+        translations = {}
+        translations.update(get_cached_translations(self._hass, language, "state"))
+        translations.update(get_cached_translations(self._hass, language, "entity"))
+        return translations
+
+    def __repr__(self):
+        return "<template AllTranslations>"
 
 
 class EvalTemplate:
@@ -130,6 +175,7 @@ def get_cached_translations(
 def setup(hass, config):
     if DOMAIN not in config:
         return True
+    languages = []
     if CONF_PRELOAD_TRANSLATIONS in config[DOMAIN]:
         languages = config[DOMAIN][CONF_PRELOAD_TRANSLATIONS]
 
@@ -142,23 +188,35 @@ def setup(hass, config):
     _TranslationCache.get_cached = get_cached
 
     def is_safe_callable(self, obj):
-        return isinstance(obj, (StateTranslated, EvalTemplate)) or self.is_safe_callable_old(obj)
+        return isinstance(obj,
+                          (StateTranslated, EvalTemplate, Translated, AllTranslations)) or self.is_safe_callable_old(
+            obj)
 
     TemplateEnvironment.is_safe_callable_old = TemplateEnvironment.is_safe_callable
     TemplateEnvironment.is_safe_callable = is_safe_callable
 
-    state_translated_template = StateTranslated(hass)
+    state_translated_template = StateTranslated(hass, languages)
+    translated_template = Translated(hass, languages)
+    all_translations_template = AllTranslations(hass, languages)
     eval_template = EvalTemplate(hass)
     tpl = Template("", hass)
     tpl._strict = False
     tpl._limited = False
     tpl._env.globals[CONST_STATE_TRANSLATED_FUNCTION_NAME] = state_translated_template
+    tpl._env.globals[CONST_TRANSLATED_FUNCTION_NAME] = translated_template
+    tpl._env.globals[CONST_ALL_TRANSLATIONS_FUNCTION_NAME] = all_translations_template
     tpl._env.globals[CONST_EVAL_FUNCTION_NAME] = eval_template
+    tpl._env.filters[CONST_STATE_TRANSLATED_FUNCTION_NAME] = state_translated_template
+    tpl._env.filters[CONST_TRANSLATED_FUNCTION_NAME] = translated_template
     tpl._env.filters[CONST_EVAL_FUNCTION_NAME] = eval_template
     tpl._strict = True
     tpl._limited = False
     tpl._env.globals[CONST_STATE_TRANSLATED_FUNCTION_NAME] = state_translated_template
+    tpl._env.globals[CONST_TRANSLATED_FUNCTION_NAME] = translated_template
+    tpl._env.globals[CONST_ALL_TRANSLATIONS_FUNCTION_NAME] = all_translations_template
     tpl._env.globals[CONST_EVAL_FUNCTION_NAME] = eval_template
+    tpl._env.filters[CONST_STATE_TRANSLATED_FUNCTION_NAME] = state_translated_template
+    tpl._env.filters[CONST_TRANSLATED_FUNCTION_NAME] = translated_template
     tpl._env.filters[CONST_EVAL_FUNCTION_NAME] = eval_template
 
     return True

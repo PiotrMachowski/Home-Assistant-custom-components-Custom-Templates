@@ -34,9 +34,11 @@
 
 # Custom Templates
 
-This integration adds possibility to use two new functions in Home Assistant Jinja2 templating engine:
-- `ct_state_translated`
-- `ct_eval`
+This integration adds possibility to use new functions in Home Assistant Jinja2 templating engine:
+- `ct_state_translated` - returns translated state of an entity
+- `ct_translated` - returns translation for a given key
+- `ct_all_translations` - returns all available translation keys (that can be used with `ct_translated`)
+- `ct_eval` - evaluates text as a template
 
 ## Usage
 
@@ -58,14 +60,81 @@ This function returns translated state of an entity.
       <pre>
 State: {{ states("sun.sun") }}
 Translated en: {{ ct_state_translated("sun.sun", "en") }}
+Translated en: {{ "sun.sun" | ct_state_translated("en") }}
 Translated nl: {{ ct_state_translated("sun.sun", "nl") }}
+Translated nl: {{ "sun.sun" | ct_state_translated("nl") }}
       </pre>
     </td>
     <td>
       <pre>
 State: below_horizon
 Translated en: Below horizon
+Translated en: Below horizon
 Translated nl: Onder de horizon
+Translated nl: Onder de horizon
+      </pre>
+    </td>
+  </tr>
+</table>
+
+### `ct_translated`
+
+This function returns translation for a given key. You can use `ct_all_translations` to check available keys.
+
+<table>
+  <tr>
+    <th>
+      Input
+    </th>
+    <th>
+      Output
+    </th>
+  </tr>
+  <tr>
+    <td>
+      <pre>
+Translated en: {{ ct_state_translated("component.sun.state._.below_horizon", "en") }}
+Translated en: {{ "component.sun.state._.below_horizon" | ct_state_translated("en") }}
+Translated nl: {{ ct_state_translated("component.sun.state._.below_horizon", "nl") }}
+Translated nl: {{ "component.sun.state._.below_horizon" | ct_state_translated("nl") }}
+      </pre>
+    </td>
+    <td>
+      <pre>
+Translated en: Below horizon
+Translated en: Below horizon
+Translated nl: Onder de horizon
+Translated nl: Onder de horizon
+      </pre>
+    </td>
+  </tr>
+</table>
+
+### `ct_all_translations`
+
+This function returns translation for a given key.
+
+<table>
+  <tr>
+    <th>
+      Input
+    </th>
+    <th>
+      Output
+    </th>
+  </tr>
+  <tr>
+    <td>
+      <pre>
+{{ ct_all_translations("en") }}
+      </pre>
+    </td>
+    <td>
+      <pre>
+{
+  "component.sun.state._.above_horizon": "Above horizon",
+  "component.sun.state._.below_horizon": "Below horizon"
+}
       </pre>
     </td>
   </tr>
