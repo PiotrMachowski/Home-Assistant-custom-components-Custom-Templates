@@ -176,6 +176,7 @@ def get_cached_translations(
     return dict(ChainMap(*cached))
 
 
+# noinspection PyProtectedMember
 def setup(hass, config):
     if DOMAIN not in config:
         return True
@@ -195,6 +196,15 @@ def setup(hass, config):
         return (isinstance(obj, (StateTranslated, EvalTemplate, Translated, AllTranslations))
                 or self.is_safe_callable_old(obj))
 
+    def patch_environment(env: TemplateEnvironment):
+        env.globals[CONST_STATE_TRANSLATED_FUNCTION_NAME] = state_translated_template
+        env.globals[CONST_TRANSLATED_FUNCTION_NAME] = translated_template
+        env.globals[CONST_ALL_TRANSLATIONS_FUNCTION_NAME] = all_translations_template
+        env.globals[CONST_EVAL_FUNCTION_NAME] = eval_template
+        env.filters[CONST_STATE_TRANSLATED_FUNCTION_NAME] = state_translated_template
+        env.filters[CONST_TRANSLATED_FUNCTION_NAME] = translated_template
+        env.filters[CONST_EVAL_FUNCTION_NAME] = eval_template
+
     TemplateEnvironment.is_safe_callable_old = TemplateEnvironment.is_safe_callable
     TemplateEnvironment.is_safe_callable = is_safe_callable
 
@@ -205,21 +215,9 @@ def setup(hass, config):
     tpl = Template("", hass)
     tpl._strict = False
     tpl._limited = False
-    tpl._env.globals[CONST_STATE_TRANSLATED_FUNCTION_NAME] = state_translated_template
-    tpl._env.globals[CONST_TRANSLATED_FUNCTION_NAME] = translated_template
-    tpl._env.globals[CONST_ALL_TRANSLATIONS_FUNCTION_NAME] = all_translations_template
-    tpl._env.globals[CONST_EVAL_FUNCTION_NAME] = eval_template
-    tpl._env.filters[CONST_STATE_TRANSLATED_FUNCTION_NAME] = state_translated_template
-    tpl._env.filters[CONST_TRANSLATED_FUNCTION_NAME] = translated_template
-    tpl._env.filters[CONST_EVAL_FUNCTION_NAME] = eval_template
+    patch_environment(tpl._env)
     tpl._strict = True
     tpl._limited = False
-    tpl._env.globals[CONST_STATE_TRANSLATED_FUNCTION_NAME] = state_translated_template
-    tpl._env.globals[CONST_TRANSLATED_FUNCTION_NAME] = translated_template
-    tpl._env.globals[CONST_ALL_TRANSLATIONS_FUNCTION_NAME] = all_translations_template
-    tpl._env.globals[CONST_EVAL_FUNCTION_NAME] = eval_template
-    tpl._env.filters[CONST_STATE_TRANSLATED_FUNCTION_NAME] = state_translated_template
-    tpl._env.filters[CONST_TRANSLATED_FUNCTION_NAME] = translated_template
-    tpl._env.filters[CONST_EVAL_FUNCTION_NAME] = eval_template
+    patch_environment(tpl._env)
 
     return True
