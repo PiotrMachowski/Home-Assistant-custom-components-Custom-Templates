@@ -19,15 +19,24 @@ _LOGGER = logging.getLogger(__name__)
 CONFIG_SCHEMA = CUSTOM_TEMPLATES_SCHEMA
 
 
-class StateTranslated:
+class TranslatableTemplate:
 
     def __init__(self, hass: HomeAssistant, available_languages):
         self._hass = hass
         self._available_languages = available_languages
 
-    def __call__(self, entity_id: str, language: str):
+    def validate_language(self, language):
         if language not in self._available_languages:
-            return f"Language {language} is not loaded"
+            raise TemplateError(f"Language {language} is not loaded")  # type: ignore[arg-type]
+
+
+class StateTranslated(TranslatableTemplate):
+
+    def __init__(self, hass: HomeAssistant, available_languages):
+        super().__init__(hass, available_languages)
+
+    def __call__(self, entity_id: str, language: str):
+        self.validate_language(language)
         state = None
         if "." in entity_id:
             state = _get_state_if_valid(self._hass, entity_id)
@@ -68,16 +77,13 @@ class StateTranslated:
         return "<template StateTranslated>"
 
 
-class Translated:
+class Translated(TranslatableTemplate):
 
     def __init__(self, hass: HomeAssistant, available_languages):
-        self._hass = hass
-        self._available_languages = available_languages
+        super().__init__(hass, available_languages)
 
     def __call__(self, key: str, language: str):
-        if language not in self._available_languages:
-            return f"Language {language} is not loaded"
-
+        self.validate_language(language)
         translations = get_cached_translations(self._hass, language, "state")
         if len(translations) > 0 and key in translations:
             return str(translations[key])
@@ -91,15 +97,13 @@ class Translated:
         return "<template Translated>"
 
 
-class AllTranslations:
+class AllTranslations(TranslatableTemplate):
 
     def __init__(self, hass: HomeAssistant, available_languages):
-        self._hass = hass
-        self._available_languages = available_languages
+        super().__init__(hass, available_languages)
 
     def __call__(self, language: str):
-        if language not in self._available_languages:
-            return f"Language {language} is not loaded"
+        self.validate_language(language)
         translations = {}
         translations.update(get_cached_translations(self._hass, language, "state"))
         translations.update(get_cached_translations(self._hass, language, "entity"))
@@ -188,9 +192,8 @@ def setup(hass, config):
     _TranslationCache.get_cached = get_cached
 
     def is_safe_callable(self, obj):
-        return isinstance(obj,
-                          (StateTranslated, EvalTemplate, Translated, AllTranslations)) or self.is_safe_callable_old(
-            obj)
+        return (isinstance(obj, (StateTranslated, EvalTemplate, Translated, AllTranslations))
+                or self.is_safe_callable_old(obj))
 
     TemplateEnvironment.is_safe_callable_old = TemplateEnvironment.is_safe_callable
     TemplateEnvironment.is_safe_callable = is_safe_callable
