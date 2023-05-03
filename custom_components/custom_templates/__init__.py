@@ -51,8 +51,10 @@ class StateTranslated(TranslatableTemplate):
         if state is None:
             return STATE_UNKNOWN
         entry = async_get(self._hass).async_get(entity_id)
-        translations = []
-        key = ""
+        translations = get_cached_translations(self._hass, language, "entity_component")
+        key = f"component.{state.domain}.entity_component._.state.{state.state}"
+        if len(translations) > 0 and key in translations:
+            return str(translations[key])
         if (entry is not None and
                 entry.unique_id is not None and
                 hasattr(entry, "translation_key") and
@@ -70,7 +72,7 @@ class StateTranslated(TranslatableTemplate):
         translations = get_cached_translations(self._hass, language, "state", state.domain)
         if len(translations) > 0 and key in translations:
             return str(translations[key])
-        _LOGGER.warning(f"No translation found for entity: f{entity_id}")
+        _LOGGER.warning(f"No translation found for entity: {entity_id}")
         return state.state
 
     def __repr__(self):
@@ -85,6 +87,9 @@ class Translated(TranslatableTemplate):
     def __call__(self, key: str, language: str):
         self.validate_language(language)
         translations = get_cached_translations(self._hass, language, "state")
+        if len(translations) > 0 and key in translations:
+            return str(translations[key])
+        translations = get_cached_translations(self._hass, language, "entity_component")
         if len(translations) > 0 and key in translations:
             return str(translations[key])
         translations = get_cached_translations(self._hass, language, "entity")
@@ -107,6 +112,7 @@ class AllTranslations(TranslatableTemplate):
         translations = {}
         translations.update(get_cached_translations(self._hass, language, "state"))
         translations.update(get_cached_translations(self._hass, language, "entity"))
+        translations.update(get_cached_translations(self._hass, language, "entity_component"))
         return translations
 
     def __repr__(self):
@@ -152,6 +158,7 @@ async def load_translations_to_cache(
         cache = hass.data.setdefault(TRANSLATION_FLATTEN_CACHE, _TranslationCache(hass))
         await cache.async_fetch(language, "entity", components_entities)
         await cache.async_fetch(language, "states", components_state)
+        await cache.async_fetch(language, "entity_component", components_state)
 
 
 @bind_hass
