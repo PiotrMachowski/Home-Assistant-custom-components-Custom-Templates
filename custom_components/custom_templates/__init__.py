@@ -138,7 +138,7 @@ class Translated(TranslatableTemplate):
         translations = get_cached_translations(self._hass, language, "entity")
         if len(translations) > 0 and key in translations:
             return str(translations[key])
-        _LOGGER.warning(f"No translation found for key: f{key}")
+        _LOGGER.warning(f"No translation found for key: {key}")
         return key
 
     def __repr__(self):
