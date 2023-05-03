@@ -3,7 +3,7 @@
   "name": "Custom Templates",
   "documentation": "https://github.com/PiotrMachowski/Home-Assistant-custom-components-Custom-Templates",
   "issue_tracker": "https://github.com/PiotrMachowski/Home-Assistant-custom-components-Custom-Templates/issues",
-  "version": "1.1.0",
+  "version": "v1.2.0",
   "requirements": [],
   "codeowners": [
     "@PiotrMachowski"
