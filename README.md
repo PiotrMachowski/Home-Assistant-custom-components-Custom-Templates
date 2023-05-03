@@ -142,10 +142,10 @@ Output
 <td>
 
 ```yaml
-Translated en: {{ ct_translated("component.sun.state._.below_horizon", "en") }}
-Translated en: {{ "component.sun.state._.below_horizon" | ct_translated("en") }}
-Translated nl: {{ ct_translated("component.sun.state._.below_horizon", "nl") }}
-Translated nl: {{ "component.sun.state._.below_horizon" | ct_translated("nl") }}
+Translated en: {{ ct_translated("component.sun.entity_component._.state.below_horizon", "en") }}
+Translated en: {{ "component.sun.entity_component._.state.below_horizon" | ct_translated("en") }}
+Translated nl: {{ ct_translated("component.sun.entity_component._.state.below_horizon", "nl") }}
+Translated nl: {{ "component.sun.entity_component._.state.below_horizon" | ct_translated("nl") }}
 ```
 
 </td>
@@ -187,8 +187,8 @@ Output
 
 ```json
 {
-  "component.sun.state._.above_horizon": "Above horizon",
-  "component.sun.state._.below_horizon": "Below horizon"
+  "component.sun.entity_component._.state.above_horizon": "Above horizon",
+  "component.sun.entity_component._.state.below_horizon": "Below horizon"
 }
 ```
 
