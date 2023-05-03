@@ -5,6 +5,7 @@
 [![Ko-Fi][ko_fi_shield]][ko_fi]
 [![buycoffee.to][buycoffee_to_shield]][buycoffee_to]
 [![PayPal.Me][paypal_me_shield]][paypal_me]
+[![Revolut.Me][revolut_me_shield]][revolut_me]
 
 
 [hacs_shield]: https://img.shields.io/static/v1.svg?label=HACS&message=Custom&style=popout&color=orange&labelColor=41bdf5&logo=HomeAssistantCommunityStore&logoColor=white
@@ -31,11 +32,15 @@
 [paypal_me_shield]: https://img.shields.io/static/v1.svg?label=%20&message=PayPal.Me&logo=paypal
 [paypal_me]: https://paypal.me/PiMachowski
 
+[revolut_me_shield]: https://img.shields.io/static/v1.svg?label=%20&message=Revolut&logo=revolut
+[revolut_me]: https://revolut.me/314ma
+
 
 # Custom Templates
 
 This integration adds possibility to use new functions in Home Assistant Jinja2 templating engine:
 - `ct_state_translated` - returns translated state of an entity
+- `ct_state_attr_translated` - returns translated value of an attribute of an entity
 - `ct_translated` - returns translation for a given key
 - `ct_all_translations` - returns all available translations (that can be used with `ct_translated`)
 - `ct_eval` - evaluates text as a template
@@ -75,6 +80,45 @@ Translated en: Below horizon
 Translated en: Below horizon
 Translated nl: Onder de horizon
 Translated nl: Onder de horizon
+```
+
+</td>
+</tr>
+</table>
+
+### `ct_state_attr_translated`
+
+This function returns translated value of an attribute of an entity.
+
+<table>
+<tr>
+<th>
+Input
+</th>
+<th>
+Output
+</th>
+</tr>
+<tr>
+<td>
+
+```
+Attribute: {{ state_attr("automation.example", "mode") }}
+Translated en: {{ ct_state_attr_translated("automation.example", "mode", "en") }}
+Translated en: {{ "automation.example" | ct_state_attr_translated("mode", "en") }}
+Translated nl: {{ ct_state_attr_translated("automation.example", "mode", "nl") }}
+Translated nl: {{ "automation.example" | ct_state_attr_translated("mode", "nl") }}
+```
+
+</td>
+<td>
+
+```
+Attribute: single
+Translated en: Single
+Translated en: Single
+Translated nl: Enkelvoudig
+Translated nl: Enkelvoudig
 ```
 
 </td>
@@ -224,3 +268,4 @@ Finally, restart Home Assistant and configure the integration.
 <a href='https://ko-fi.com/piotrmachowski' target='_blank'><img height='35px' src='https://az743702.vo.msecnd.net/cdn/kofi3.png?v=0' border='0' alt='Buy Me a Coffee at ko-fi.com' />
 <a href="https://buycoffee.to/piotrmachowski" target="_blank"><img src="https://buycoffee.to/btn/buycoffeeto-btn-primary.svg" height="35px" alt="Postaw mi kawę na buycoffee.to"></a>
 <a href="https://paypal.me/PiMachowski" target="_blank"><img src="https://www.paypalobjects.com/webstatic/mktg/logo/pp_cc_mark_37x23.jpg" border="0" alt="PayPal Logo" height="35px" style="height: auto !important;width: auto !important;"></a>
+<a href="https://revolut.me/314ma" target="_blank"><img src="https://www.revolut.com/favicon/android-chrome-192x192.png" height="35px" alt="Revolut"></a>
