@@ -51,25 +51,26 @@ class StateTranslated(TranslatableTemplate):
         if state is None:
             return STATE_UNKNOWN
         entry = async_get(self._hass).async_get(entity_id)
+        domain = state.domain
+        device_class = "_"
+        if "device_class" in state.attributes:
+            device_class = state.attributes["device_class"]
+
         translations = get_cached_translations(self._hass, language, "entity_component")
-        key = f"component.{state.domain}.entity_component._.state.{state.state}"
+        key = f"component.{domain}.entity_component.{device_class}.state.{state.state}"
         if len(translations) > 0 and key in translations:
             return str(translations[key])
         if (entry is not None and
                 entry.unique_id is not None and
                 hasattr(entry, "translation_key") and
                 entry.translation_key is not None):
-            key = f"component.{entry.platform}.entity.{state.domain}.{entry.translation_key}.state.{state.state}"
+            key = f"component.{entry.platform}.entity.{domain}.{entry.translation_key}.state.{state.state}"
             translations = get_cached_translations(self._hass, language, "entity")
         if len(translations) > 0 and key in translations:
             return str(translations[key])
 
-        domain = state.domain
-        device_class = "_"
-        if "device_class" in state.attributes:
-            device_class = state.attributes["device_class"]
         key = f"component.{domain}.state.{device_class}.{state.state}"
-        translations = get_cached_translations(self._hass, language, "state", state.domain)
+        translations = get_cached_translations(self._hass, language, "state", domain)
         if len(translations) > 0 and key in translations:
             return str(translations[key])
         _LOGGER.warning(f"No translation found for entity: {entity_id}")
@@ -103,15 +104,20 @@ class StateAttrTranslated(TranslatableTemplate):
         if attribute in state.attributes:
             attribute_value = state.attributes.get(attribute)
         entry = async_get(self._hass).async_get(entity_id)
+        domain = state.domain
+        device_class = "_"
+        if "device_class" in state.attributes:
+            device_class = state.attributes["device_class"]
+
         translations = get_cached_translations(self._hass, language, "entity_component")
-        key = f"component.{state.domain}.entity_component._.state_attributes.{attribute}.state.{attribute_value}"
+        key = f"component.{domain}.entity_component.{device_class}.state_attributes.{attribute}.state.{attribute_value}"
         if len(translations) > 0 and key in translations:
             return str(translations[key])
         if (entry is not None and
                 entry.unique_id is not None and
                 hasattr(entry, "translation_key") and
                 entry.translation_key is not None):
-            key = f"component.{entry.platform}.entity.{state.domain}.{entry.translation_key}.state_attributes.{attribute}.state.{attribute_value}"
+            key = f"component.{entry.platform}.entity.{domain}.{entry.translation_key}.state_attributes.{attribute}.state.{attribute_value}"
             translations = get_cached_translations(self._hass, language, "entity")
         if len(translations) > 0 and key in translations:
             return str(translations[key])
@@ -138,7 +144,7 @@ class Translated(TranslatableTemplate):
         translations = get_cached_translations(self._hass, language, "entity")
         if len(translations) > 0 and key in translations:
             return str(translations[key])
-        _LOGGER.warning(f"No translation found for key: f{key}")
+        _LOGGER.warning(f"No translation found for key: {key}")
         return key
 
     def __repr__(self):
