@@ -241,7 +241,9 @@ custom_templates:
     - nl
 ```
 
-Section `preload_translations` should contain a list of languages you want to use with `ct_state_translated` function.
+A list of available language tags is available [here](https://github.com/home-assistant/core/blob/master/homeassistant/generated/languages.py), a list of desriptions of language tags is available [here](https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry).
+
+Section `preload_translations` should contain a list of languages you want to use with translations-related functions.
 
 ## Installation
 
