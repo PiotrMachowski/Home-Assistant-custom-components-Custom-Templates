@@ -1,4 +1,4 @@
-[![HACS Custom][hacs_shield]][hacs]
+[![HACS Default][hacs_shield]][hacs]
 [![GitHub Latest Release][releases_shield]][latest_release]
 [![GitHub All Releases][downloads_total_shield]][releases]
 [![Community Forum][community_forum_shield]][community_forum]<!-- piotrmachowski_support_badges_start -->
@@ -9,8 +9,8 @@
 <!-- piotrmachowski_support_badges_end -->
 
 
-[hacs_shield]: https://img.shields.io/static/v1.svg?label=HACS&message=Custom&style=popout&color=orange&labelColor=41bdf5&logo=HomeAssistantCommunityStore&logoColor=white
-[hacs]: https://hacs.xyz/docs/faq/custom_repositories
+[hacs_shield]: https://img.shields.io/static/v1.svg?label=HACS&message=Default&style=popout&color=green&labelColor=41bdf5&logo=HomeAssistantCommunityStore&logoColor=white
+[hacs]: https://hacs.xyz/docs/default_repositories
 
 [latest_release]: https://github.com/PiotrMachowski/Home-Assistant-custom-components-Custom-Templates/releases/latest
 [releases_shield]: https://img.shields.io/github/release/PiotrMachowski/Home-Assistant-custom-components-Custom-Templates.svg?style=popout
@@ -235,8 +235,8 @@ Section `preload_translations` should contain a list of languages you want to us
 
 ### Using [HACS](https://hacs.xyz/) (recommended)
 
-* In _Integrations_ section add this repository `https://github.com/PiotrMachowski/Home-Assistant-custom-components-Custom-Templates` with type `integration`
-* Install added repository
+This integration can be installed using HACS.
+To do it search for `Custom Templates` in *Integrations* section.
  
 ### Manual
 
