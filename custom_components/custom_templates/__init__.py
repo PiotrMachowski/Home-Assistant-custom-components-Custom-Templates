@@ -37,12 +37,15 @@ class IsAvailable():
         self._hass = hass
     def __call__(self, entity_id: str, unavailable_states=DEFAULT_UNAVAILABLE_STATES):
         unavailable_states = [state.lower() if type(state) is str else state for state in unavailable_states]
-        if entity_id in _RESERVED_NAMES:
-            return None
-        if not valid_entity_id(f"{entity_id}.entity"):
-            raise TemplateError(f"Invalid domain name '{entity_id}'")
-        
-        state = _get_state_if_valid(self._hass, entity_id)
+        if "." in entity_id:
+            state = _get_state_if_valid(self._hass, entity_id)
+
+        else:
+            if entity_id in _RESERVED_NAMES:
+                return None
+            if not valid_entity_id(f"{entity_id}.entity"):
+                raise TemplateError(f"Invalid domain name '{entity_id}'") 
+
         if state is str:
             state = state.lower()
         result = state not in unavailable_states
