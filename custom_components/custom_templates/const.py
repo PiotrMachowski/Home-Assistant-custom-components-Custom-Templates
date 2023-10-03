@@ -16,7 +16,8 @@ CUSTOM_TEMPLATES_SCHEMA = vol.Schema(
 DEFAULT_UNAVAILABLE_STATES = [
     'unknown',
     'unavailable',
-    ''
+    '',
+    None,
 ]
 
 CONST_EVAL_FUNCTION_NAME = "ct_eval"
