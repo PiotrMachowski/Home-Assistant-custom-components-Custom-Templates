@@ -46,7 +46,7 @@ class IsAvailable():
             if not valid_entity_id(f"{entity_id}.entity"):
                 raise TemplateError(f"Invalid domain name '{entity_id}'") 
 
-        if state is str:
+        if type(state) is str:
             state = state.lower()
         result = state not in unavailable_states
         return result
