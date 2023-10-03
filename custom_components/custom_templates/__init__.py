@@ -291,6 +291,7 @@ def setup(hass: HomeAssistant, config: ConfigType):
         env.globals[CONST_TRANSLATED_FUNCTION_NAME] = translated_template
         env.globals[CONST_ALL_TRANSLATIONS_FUNCTION_NAME] = all_translations_template
         env.globals[CONST_EVAL_FUNCTION_NAME] = eval_template
+        env.globals[CONST_IS_AVAILABLE_FUNCTION_NAME] = is_available
         env.filters[CONST_STATE_TRANSLATED_FUNCTION_NAME] = state_translated_template
         env.filters[CONST_STATE_ATTR_TRANSLATED_FUNCTION_NAME] = state_attr_translated_template
         env.filters[CONST_TRANSLATED_FUNCTION_NAME] = translated_template
