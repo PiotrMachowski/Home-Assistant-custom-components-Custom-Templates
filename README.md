@@ -274,6 +274,8 @@ Section `preload_translations` should contain a list of languages you want to us
 
 ## Installation
 
+Since version v1.3.0 the minimal supported version of Home Assistant is 2024.2.0.
+
 ### Using [HACS](https://hacs.xyz/) (recommended)
 
 This integration can be installed using HACS.
