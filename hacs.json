@@ -2,5 +2,6 @@
   "name": "Custom Templates",
   "render_readme": true,
   "zip_release": true,
-  "filename": "custom_templates.zip"
+  "filename": "custom_templates.zip",
+  "homeassistant": "2024.2.0b0"
 }

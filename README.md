@@ -1,6 +1,7 @@
 [![HACS Default][hacs_shield]][hacs]
 [![GitHub Latest Release][releases_shield]][latest_release]
 [![GitHub All Releases][downloads_total_shield]][releases]
+[![Installations][installations_shield]][releases]
 [![Community Forum][community_forum_shield]][community_forum]<!-- piotrmachowski_support_badges_start -->
 [![Ko-Fi][ko_fi_shield]][ko_fi]
 [![buycoffee.to][buycoffee_to_shield]][buycoffee_to]
@@ -17,6 +18,8 @@
 
 [releases]: https://github.com/PiotrMachowski/Home-Assistant-custom-components-Custom-Templates/releases
 [downloads_total_shield]: https://img.shields.io/github/downloads/PiotrMachowski/Home-Assistant-custom-components-Custom-Templates/total
+
+[installations_shield]: https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fanalytics.home-assistant.io%2Fcustom_integrations.json&query=%24.custom_templates.total&style=popout&color=41bdf5&label=analytics
 
 [community_forum_shield]: https://img.shields.io/static/v1.svg?label=%20&message=Forum&style=popout&color=41bdf5&logo=HomeAssistant&logoColor=white
 [community_forum]: https://community.home-assistant.io/t/custom-templates/528378

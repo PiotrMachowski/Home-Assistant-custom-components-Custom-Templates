@@ -8,7 +8,7 @@ from homeassistant.const import EVENT_COMPONENT_LOADED, STATE_UNKNOWN
 from homeassistant.core import Event, HomeAssistant, valid_entity_id
 from homeassistant.helpers.entity_registry import async_get
 from homeassistant.helpers.template import _get_state_if_valid, _RESERVED_NAMES, Template, TemplateEnvironment
-from homeassistant.helpers.translation import _TranslationCache, TRANSLATION_FLATTEN_CACHE, TRANSLATION_LOAD_LOCK
+from homeassistant.helpers.translation import _TranslationCache, TRANSLATION_FLATTEN_CACHE
 from homeassistant.loader import bind_hass
 
 from .const import (DOMAIN, CUSTOM_TEMPLATES_SCHEMA, CONF_PRELOAD_TRANSLATIONS, CONST_EVAL_FUNCTION_NAME,
@@ -103,7 +103,7 @@ class StateTranslated(TranslatableTemplate):
         return state.state
 
     def __repr__(self):
-        return "<template StateTranslated>"
+        return "<template CT_StateTranslated>"
 
 
 class StateAttrTranslated(TranslatableTemplate):
@@ -151,7 +151,7 @@ class StateAttrTranslated(TranslatableTemplate):
         return attribute_value
 
     def __repr__(self):
-        return "<template StateAttrTranslated>"
+        return "<template CT_StateAttrTranslated>"
 
 
 class Translated(TranslatableTemplate):
@@ -174,7 +174,7 @@ class Translated(TranslatableTemplate):
         return key
 
     def __repr__(self):
-        return "<template Translated>"
+        return "<template CT_Translated>"
 
 
 class AllTranslations(TranslatableTemplate):
@@ -191,7 +191,7 @@ class AllTranslations(TranslatableTemplate):
         return translations
 
     def __repr__(self):
-        return "<template AllTranslations>"
+        return "<template CT_AllTranslations>"
 
 
 class EvalTemplate:
@@ -204,7 +204,7 @@ class EvalTemplate:
         return tpl.async_render()
 
     def __repr__(self):
-        return "<template EvalTemplate>"
+        return "<template CTEvalTemplate>"
 
 
 def get_cached(
@@ -213,8 +213,13 @@ def get_cached(
         category: str,
         components: set[str],
 ):
-    cached = self.cache.get(language, {})
-    return [cached.get(component, {}).get(category, {}) for component in components]
+    category_cache = self.cache.get(language, {}).get(category, {})
+    if len(components) == 1 and (component := next(iter(components))):
+        return category_cache.get(component, {})
+    result: dict[str, str] = {}
+    for component in components.intersection(category_cache):
+        result.update(category_cache[component])
+    return result
 
 
 @bind_hass
@@ -222,18 +227,14 @@ async def load_translations_to_cache(
         hass: HomeAssistant,
         language: str,
 ):
-    lock = hass.data.setdefault(TRANSLATION_LOAD_LOCK, asyncio.Lock())
-
     components_entities = {
         component for component in hass.config.components if "." not in component
     }
     components_state = set(hass.config.components)
-
-    async with lock:
-        cache = hass.data.setdefault(TRANSLATION_FLATTEN_CACHE, _TranslationCache(hass))
-        await cache.async_fetch(language, "entity", components_entities)
-        await cache.async_fetch(language, "states", components_state)
-        await cache.async_fetch(language, "entity_component", components_state)
+    cache = hass.data.setdefault(TRANSLATION_FLATTEN_CACHE, _TranslationCache(hass))
+    await cache.async_fetch(language, "entity", components_entities)
+    await cache.async_fetch(language, "states", components_state)
+    await cache.async_fetch(language, "entity_component", components_state)
 
 
 @bind_hass
@@ -254,9 +255,7 @@ def get_cached_translations(
 
     cache = hass.data.setdefault(TRANSLATION_FLATTEN_CACHE, _TranslationCache(hass))
     # noinspection PyUnresolvedReferences
-    cached = cache.ct_patched_get_cached(language, category, components)
-
-    return dict(ChainMap(*cached))
+    return cache.ct_patched_get_cached(language, category, components)
 
 
 # noinspection PyProtectedMember
