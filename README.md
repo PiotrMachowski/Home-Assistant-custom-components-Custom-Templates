@@ -1,6 +1,7 @@
 [![HACS Default][hacs_shield]][hacs]
 [![GitHub Latest Release][releases_shield]][latest_release]
 [![GitHub All Releases][downloads_total_shield]][releases]
+[![Installations][installations_shield]][releases]
 [![Community Forum][community_forum_shield]][community_forum]<!-- piotrmachowski_support_badges_start -->
 [![Ko-Fi][ko_fi_shield]][ko_fi]
 [![buycoffee.to][buycoffee_to_shield]][buycoffee_to]
@@ -18,6 +19,8 @@
 [releases]: https://github.com/PiotrMachowski/Home-Assistant-custom-components-Custom-Templates/releases
 [downloads_total_shield]: https://img.shields.io/github/downloads/PiotrMachowski/Home-Assistant-custom-components-Custom-Templates/total
 
+[installations_shield]: https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fanalytics.home-assistant.io%2Fcustom_integrations.json&query=%24.custom_templates.total&style=popout&color=41bdf5&label=analytics
+
 [community_forum_shield]: https://img.shields.io/static/v1.svg?label=%20&message=Forum&style=popout&color=41bdf5&logo=HomeAssistant&logoColor=white
 [community_forum]: https://community.home-assistant.io/t/custom-templates/528378
 
@@ -30,6 +33,7 @@ This integration adds possibility to use new functions in Home Assistant Jinja2 
 - `ct_translated` - returns translation for a given key
 - `ct_all_translations` - returns all available translations (that can be used with `ct_translated`)
 - `ct_eval` - evaluates text as a template
+- `ct_is_available` - checks if given entity is available
 
 ## Usage
 
@@ -210,6 +214,43 @@ Output
 ```
 below_horizon
 below_horizon
+```
+
+</td>
+</tr>
+</table>
+
+### `ct_is_available`
+
+This function checks if given entity has an available state.
+By default the following states are treated as not available: `unknown`, `unavailable`, `<empty_text>`, `None`.
+It is possible to override this list by providing a second argument.
+
+<table>
+<tr>
+<th>
+Input
+</th>
+<th>
+Output
+</th>
+</tr>
+<tr>
+<td>
+
+```yaml
+{{ states('sensor.invalid') }}
+{{ ct_is_available('sensor.invalid') }}
+{{ ct_is_available('sensor.invalid', ['', 'unknown']) }}
+```
+
+</td>
+<td> 
+
+```
+unavailable
+true
+false
 ```
 
 </td>
