@@ -4,7 +4,7 @@ import logging
 from typing import Any, Callable
 
 from homeassistant.exceptions import TemplateError
-from homeassistant.const import EVENT_COMPONENT_LOADED, STATE_UNKNOWN
+from homeassistant.const import EVENT_COMPONENT_LOADED, STATE_UNAVAILABLE, STATE_UNKNOWN
 from homeassistant.core import Event, HomeAssistant, valid_entity_id
 from homeassistant.helpers.entity_registry import async_get
 from homeassistant.helpers.template import _get_state_if_valid, _RESERVED_NAMES, Template, TemplateEnvironment
@@ -80,31 +80,17 @@ class StateTranslated(TranslatableTemplate):
 
         if state is None:
             return STATE_UNKNOWN
-        entry = async_get(self._hass).async_get(entity_id)
+
+        state_value = state.state
         domain = state.domain
-        device_class = "_"
-        if "device_class" in state.attributes:
-            device_class = state.attributes["device_class"]
+        device_class = state.attributes.get("device_class")
+        entry = async_get(self._hass).async_get(entity_id)
+        platform = None if entry is None else entry.platform
+        translation_key = None if entry is None else entry.translation_key
 
-        translations = get_cached_translations(self._hass, language, "entity_component")
-        key = f"component.{domain}.entity_component.{device_class}.state.{state.state}"
-        if len(translations) > 0 and key in translations:
-            return str(translations[key])
-        if (entry is not None and
-                entry.unique_id is not None and
-                hasattr(entry, "translation_key") and
-                entry.translation_key is not None):
-            key = f"component.{entry.platform}.entity.{domain}.{entry.translation_key}.state.{state.state}"
-            translations = get_cached_translations(self._hass, language, "entity")
-        if len(translations) > 0 and key in translations:
-            return str(translations[key])
-
-        key = f"component.{domain}.state.{device_class}.{state.state}"
-        translations = get_cached_translations(self._hass, language, "state", domain)
-        if len(translations) > 0 and key in translations:
-            return str(translations[key])
-        _LOGGER.warning(f"No translation found for entity: {entity_id}")
-        return state.state
+        return async_translate_state(
+            self._hass, state_value, domain, platform, translation_key, device_class
+        )
 
     def __repr__(self):
         return "<template CT_StateTranslated>"
@@ -224,6 +210,49 @@ def get_cached(
     for component in components.intersection(category_cache):
         result.update(category_cache[component])
     return result
+
+def async_translate_state(
+    hass: HomeAssistant,
+    state: str,
+    domain: str,
+    platform: str | None,
+    translation_key: str | None,
+    device_class: str | None,
+) -> str:
+    """Translate provided state using cached translations for currently selected language."""
+    if state in [STATE_UNAVAILABLE, STATE_UNKNOWN]:
+        return state
+    language = hass.config.language
+    if platform is not None and translation_key is not None:
+        localize_key = (
+            f"component.{platform}.entity.{domain}.{translation_key}.state.{state}"
+        )
+        translations = get_cached_translations(hass, language, "entity")
+        if localize_key in translations:
+            return translations[localize_key]
+
+    translations = get_cached_translations(hass, language, "entity_component")
+    if device_class is not None:
+        localize_key = (
+            f"component.{domain}.entity_component.{device_class}.state.{state}"
+        )
+        if localize_key in translations:
+            return translations[localize_key]
+    localize_key = f"component.{domain}.entity_component._.state.{state}"
+    if localize_key in translations:
+        return translations[localize_key]
+
+    translations = get_cached_translations(hass, language, "state", domain)
+    if device_class is not None:
+        localize_key = f"component.{domain}.state.{device_class}.{state}"
+        if localize_key in translations:
+            return translations[localize_key]
+    localize_key = f"component.{domain}.state._.{state}"
+    if localize_key in translations:
+        return translations[localize_key]
+
+    return state
+
 
 
 @bind_hass
