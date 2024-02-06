@@ -33,6 +33,7 @@ This integration adds possibility to use new functions in Home Assistant Jinja2 
 - `ct_translated` - returns translation for a given key
 - `ct_all_translations` - returns all available translations (that can be used with `ct_translated`)
 - `ct_eval` - evaluates text as a template
+- `ct_is_available` - checks if given entity is available
 
 ## Usage
 
@@ -213,6 +214,43 @@ Output
 ```
 below_horizon
 below_horizon
+```
+
+</td>
+</tr>
+</table>
+
+### `ct_is_available`
+
+This function checks if given entity has an available state.
+By default the following states are treated as not available: `unknown`, `unavailable`, `<empty_text>`, `None`.
+It is possible to override this list by providing a second argument.
+
+<table>
+<tr>
+<th>
+Input
+</th>
+<th>
+Output
+</th>
+</tr>
+<tr>
+<td>
+
+```yaml
+{{ states('sensor.invalid') }}
+{{ ct_is_available('sensor.invalid') }}
+{{ ct_is_available('sensor.invalid', ["", "unknown"]) }}
+```
+
+</td>
+<td> 
+
+```
+unavailable
+true
+false
 ```
 
 </td>
