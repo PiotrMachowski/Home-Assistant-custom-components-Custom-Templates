@@ -241,7 +241,7 @@ Output
 ```yaml
 {{ states('sensor.invalid') }}
 {{ ct_is_available('sensor.invalid') }}
-{{ ct_is_available('sensor.invalid', ["", "unknown"]) }}
+{{ ct_is_available('sensor.invalid', ['', 'unknown']) }}
 ```
 
 </td>
