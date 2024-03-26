@@ -39,15 +39,12 @@ class DictMerge:
     def __init__(self, hass: HomeAssistant):
         self._hass = hass
 
-    def __call__(self, dict_list):
-        result = {}
-        for d in dict_list:
-            for k, v in d.items():
-                result[k] = v
+    def __call__(self, *args):
+        result = {k:v for d in args for k, v in d.items()}
         return result
 
     def __repr__(self):
-        return f"<template CT_DictMerge>"
+        return f"<template CT_DictMerge 0.01>"
 
 class IsAvailable:
 
@@ -298,13 +295,14 @@ def setup(hass: HomeAssistant, config: ConfigType):
     all_translations_template = AllTranslations(hass, languages)
     eval_template = EvalTemplate(hass)
     is_available_template = IsAvailable(hass)
+    dict_merge_template = DictMerge(hass)
 
     _TranslationCache.ct_patched_get_cached = get_cached
 
     def is_safe_callable(self: TemplateEnvironment, obj):
         # noinspection PyUnresolvedReferences
         return (isinstance(obj, (
-            StateTranslated, StateAttrTranslated, EvalTemplate, Translated, AllTranslations, IsAvailable))
+            StateTranslated, StateAttrTranslated, EvalTemplate, Translated, AllTranslations, IsAvailable, DictMerge))
                 or self.ct_original_is_safe_callable(obj))
 
     def patch_environment(env: TemplateEnvironment):
@@ -314,13 +312,13 @@ def setup(hass: HomeAssistant, config: ConfigType):
         env.globals[CONST_ALL_TRANSLATIONS_FUNCTION_NAME] = all_translations_template
         env.globals[CONST_EVAL_FUNCTION_NAME] = eval_template
         env.globals[CONST_IS_AVAILABLE_FUNCTION_NAME] = is_available_template
-        env.globals[CONST_DICT_MERGE_FUNCTION_NAME] = is_available_template
+        env.globals[CONST_DICT_MERGE_FUNCTION_NAME] = dict_merge_template
         env.filters[CONST_STATE_TRANSLATED_FUNCTION_NAME] = state_translated_template
         env.filters[CONST_STATE_ATTR_TRANSLATED_FUNCTION_NAME] = state_attr_translated_template
         env.filters[CONST_TRANSLATED_FUNCTION_NAME] = translated_template
         env.filters[CONST_EVAL_FUNCTION_NAME] = eval_template
         env.filters[CONST_IS_AVAILABLE_FUNCTION_NAME] = is_available_template
-        env.filters[CONST_DICT_MERGE_FUNCTION_NAME] = is_available_template
+        env.filters[CONST_DICT_MERGE_FUNCTION_NAME] = dict_merge_template
 
     def patched_init(
             self: TemplateEnvironment,
