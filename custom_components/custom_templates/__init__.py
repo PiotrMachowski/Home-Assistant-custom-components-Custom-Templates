@@ -39,8 +39,11 @@ class DictMerge:
     def __init__(self, hass: HomeAssistant):
         self._hass = hass
 
-    def __call__(self, *args):
-        result = {k:v for d in args for k,v in d.items()}
+    def __call__(self, dict_list):
+        result = {}
+        for d in dict_list:
+            for k, v in d.items():
+                result[k] = v
         return result
 
     def __repr__(self):
