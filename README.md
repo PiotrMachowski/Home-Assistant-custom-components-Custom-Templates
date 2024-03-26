@@ -34,6 +34,7 @@ This integration adds possibility to use new functions in Home Assistant Jinja2 
 - `ct_all_translations` - returns all available translations (that can be used with `ct_translated`)
 - `ct_eval` - evaluates text as a template
 - `ct_is_available` - checks if given entity is available
+- `ct_dict_merge` - Merges two or more dictionaries together. 
 
 ## Usage
 
@@ -251,6 +252,50 @@ Output
 unavailable
 true
 false
+```
+
+</td>
+</tr>
+</table>
+
+### `ct_dict_merge`
+
+This function will merge one or more dictionaries (mappings) together into a single dictionary.
+If any key is shared between two or more dictionaries, the value of the key will be the last value passed.
+
+<table>
+<tr>
+<th>
+Input
+</th>
+<th>
+Output
+</th>
+</tr>
+<tr>
+<td>
+
+```yaml
+{% set dict_1 = {'a':1,'b',2,'c':3} %}
+{% set dict_2 = {'d':4,'e',5,'f':6} %}
+{% set dict_3 = {'b':7,'d',8,'g':9} %}
+{{ ct_dict_merge(dict_1, dict_1) }}
+{{ ct_dict_merge(dict_1, dict_2) }}
+{{ ct_dict_merge(dict_2, dict_3) }}
+{{ ct_dict_merge(dict_1, dict_2, dict_3) }}
+```
+
+</td>
+<td> 
+
+```django
+
+
+
+{'a': 1, 'b': 2, 'c': 3}
+{'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5, 'f': 6}
+{'d': 8, 'e': 5, 'f': 6, 'b': 7, 'g': 9}
+{'a': 1, 'b': 7, 'c': 3, 'd': 8, 'e': 5, 'f': 6, 'g': 9}
 ```
 
 </td>
