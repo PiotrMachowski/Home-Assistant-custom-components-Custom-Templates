@@ -14,7 +14,8 @@ from homeassistant.loader import bind_hass
 from .const import (DOMAIN, CUSTOM_TEMPLATES_SCHEMA, CONF_PRELOAD_TRANSLATIONS, CONST_EVAL_FUNCTION_NAME,
                     CONST_STATE_TRANSLATED_FUNCTION_NAME, CONST_STATE_ATTR_TRANSLATED_FUNCTION_NAME,
                     CONST_TRANSLATED_FUNCTION_NAME, CONST_ALL_TRANSLATIONS_FUNCTION_NAME,
-                    DEFAULT_UNAVAILABLE_STATES, CONST_IS_AVAILABLE_FUNCTION_NAME)
+                    DEFAULT_UNAVAILABLE_STATES, CONST_IS_AVAILABLE_FUNCTION_NAME,
+                    CONST_DICT_MERGE_FUNCTION_NAME)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -32,6 +33,18 @@ class TranslatableTemplate:
         if language not in self._available_languages:
             raise TemplateError(f"Language {language} is not loaded")  # type: ignore[arg-type]
 
+
+class DictMerge:
+
+    def __init__(self, hass: HomeAssistant):
+        self._hass = hass
+
+    def __call__(self, *args):
+        result = {k:v for d in args for k,v in d.items()}
+        return result
+
+    def __repr__(self):
+        return f"<template CT_DictMerge>"
 
 class IsAvailable:
 
