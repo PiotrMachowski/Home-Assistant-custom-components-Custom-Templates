@@ -276,9 +276,9 @@ Output
 <td>
 
 ```yaml
-{% set dict_1 = {'a':1,'b',2,'c':3} %}
-{% set dict_2 = {'d':4,'e',5,'f':6} %}
-{% set dict_3 = {'b':7,'d',8,'g':9} %}
+{% set dict_1 = {'a':1,'b':2,'c':3} %}
+{% set dict_2 = {'d':4,'e':5,'f':6} %}
+{% set dict_3 = {'b':7,'d':8,'g':9} %}
 {{ ct_dict_merge(dict_1, dict_1) }}
 {{ ct_dict_merge(dict_1, dict_2) }}
 {{ ct_dict_merge(dict_2, dict_3) }}
