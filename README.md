@@ -27,6 +27,11 @@
 
 # Custom Templates
 
+> [!CAUTION]
+> This custom integration tampers with internal code of Home Assistant which _might_ cause some unforeseen issues (especially after HA updates).
+> If you encounter any problems related to templating engine or translations try uninstalling this integration before raising an issue for Home Assistant.
+
+
 This integration adds possibility to use new functions in Home Assistant Jinja2 templating engine:
 - `ct_state_translated` - returns translated state of an entity
 - `ct_state_attr_translated` - returns translated value of an attribute of an entity
