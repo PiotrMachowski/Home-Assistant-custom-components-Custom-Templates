@@ -7,7 +7,7 @@ CONF_PRELOAD_TRANSLATIONS = "preload_translations"
 CUSTOM_TEMPLATES_SCHEMA = vol.Schema(
     {
         DOMAIN: vol.Schema({
-            vol.Required(CONF_PRELOAD_TRANSLATIONS): cv.ensure_list(cv.string)
+            vol.Optional(CONF_PRELOAD_TRANSLATIONS): cv.ensure_list(cv.string)
         })
     },
     extra=vol.ALLOW_EXTRA

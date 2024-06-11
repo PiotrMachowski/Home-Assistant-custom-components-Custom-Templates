@@ -30,20 +30,22 @@ def setup(hass: HomeAssistant, config: ConfigType) -> bool:
     if DOMAIN not in config:
         return True
     languages = []
-    if CONF_PRELOAD_TRANSLATIONS in config[DOMAIN]:
+    if CONF_PRELOAD_TRANSLATIONS in config[DOMAIN] and len(config[DOMAIN][CONF_PRELOAD_TRANSLATIONS]) > 0:
         languages = config[DOMAIN][CONF_PRELOAD_TRANSLATIONS]
-        cache: _TranslationCache = hass.data[TRANSLATION_FLATTEN_CACHE]
+    else:
+        languages = [hass.config.language]
+    cache: _TranslationCache = hass.data[TRANSLATION_FLATTEN_CACHE]
 
-        async def _async_load_translations(_: Event) -> None:
-            for language in languages:
-                _LOGGER.debug("Loading translations for language: %s", language)
-                _
-                await cache.async_load(language, hass.config.components)
+    async def _async_load_translations(_: Event) -> None:
+        for language in languages:
+            _LOGGER.debug("Loading translations for language: %s", language)
+            components = set(filter(lambda c: "." not in c, hass.config.components))
+            await cache.async_load(language, components)
 
-        hass.bus.async_listen(
-            EVENT_COMPONENT_LOADED,
-            _async_load_translations
-        )
+    hass.bus.async_listen(
+        EVENT_COMPONENT_LOADED,
+        _async_load_translations
+    )
 
     state_translated_template = StateTranslated(hass, languages)
     state_attr_translated_template = StateAttrTranslated(hass, languages)
