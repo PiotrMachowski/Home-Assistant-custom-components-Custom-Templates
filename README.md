@@ -47,6 +47,7 @@ This integration adds possibility to use new functions in Home Assistant Jinja2 
 ### `ct_state_translated`
 
 This function returns translated state of an entity.
+Second parameter (language) is optional - it defaults to the language configured in Home Assistant.
 
 <table>
 <tr>
@@ -86,6 +87,7 @@ Translated nl: Onder de horizon
 ### `ct_state_attr_translated`
 
 This function returns translated value of an attribute of an entity.
+Third parameter (language) is optional - it defaults to the language configured in Home Assistant.
 
 <table>
 <tr>
@@ -125,6 +127,7 @@ Translated nl: Enkelvoudig
 ### `ct_translated`
 
 This function returns translation for a given key. You can use `ct_all_translations` to check available keys.
+Second parameter (language) is optional - it defaults to the language configured in Home Assistant.
 
 <table>
 <tr>
@@ -162,6 +165,7 @@ Translated nl: Onder de horizon
 ### `ct_all_translations`
 
 This function returns all available translations.
+Parameter (language) is optional - it defaults to the language configured in Home Assistant.
 
 <table>
 <tr>
@@ -230,7 +234,7 @@ below_horizon
 ### `ct_is_available`
 
 This function checks if given entity has an available state.
-By default the following states are treated as not available: `unknown`, `unavailable`, `<empty_text>`, `None`.
+By default, the following states are treated as not available: `unknown`, `unavailable`, `<empty_text>`, `None`.
 It is possible to override this list by providing a second argument.
 
 <table>
@@ -312,20 +316,27 @@ Output
 
 To use this integration you have to add following config in `configuration.yaml`:
 
-```yaml
-custom_templates:
-  preload_translations:
-    - en
-    - nl
-```
+* Without additional languages:
+  ```yaml
+  custom_templates:
+  ```
 
-A list of available language tags is available [here](https://github.com/home-assistant/core/blob/master/homeassistant/generated/languages.py), a list of desriptions of language tags is available [here](https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry).
+* With additional languages:
+  ```yaml
+  custom_templates:
+    preload_translations:
+      - en
+      - nl
+  ```
+
+A list of available language tags is available [here](https://github.com/home-assistant/core/blob/master/homeassistant/generated/languages.py), a list of descriptions of language tags is available [here](https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry).
 
 Section `preload_translations` should contain a list of languages you want to use with translations-related functions.
+If it is not provided only a language provided in HA config will be loaded.
 
 ## Installation
 
-Since version v1.3.0 the minimal supported version of Home Assistant is 2024.2.0.
+Since version v1.4.0 the minimal supported version of Home Assistant is 2024.5.0.
 
 ### Using [HACS](https://hacs.xyz/) (recommended)
 
