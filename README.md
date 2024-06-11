@@ -29,7 +29,8 @@
 
 > [!CAUTION]
 > This custom integration tampers with internal code of Home Assistant which _might_ cause some unforeseen issues (especially after HA updates).
-> If you encounter any problems related to templating engine or translations try uninstalling this integration before raising an issue for Home Assistant.
+> 
+> If you encounter any problems related to templating engine or translations try uninstalling this integration before raising an issue in Home Assistant repository.
 
 
 This integration adds possibility to use new functions in Home Assistant Jinja2 templating engine:
