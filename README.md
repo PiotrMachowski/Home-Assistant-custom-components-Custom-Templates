@@ -27,6 +27,12 @@
 
 # Custom Templates
 
+> [!CAUTION]
+> This custom integration tampers with internal code of Home Assistant which _might_ cause some unforeseen issues (especially after HA updates).
+> 
+> If you encounter any problems related to templating engine or translations try uninstalling this integration before raising an issue in Home Assistant repository.
+
+
 This integration adds possibility to use new functions in Home Assistant Jinja2 templating engine:
 - `ct_state_translated` - returns translated state of an entity
 - `ct_state_attr_translated` - returns translated value of an attribute of an entity
@@ -34,12 +40,14 @@ This integration adds possibility to use new functions in Home Assistant Jinja2 
 - `ct_all_translations` - returns all available translations (that can be used with `ct_translated`)
 - `ct_eval` - evaluates text as a template
 - `ct_is_available` - checks if given entity is available
+- `ct_dict_merge` - Merges two or more dictionaries together. 
 
 ## Usage
 
 ### `ct_state_translated`
 
 This function returns translated state of an entity.
+Second parameter (language) is optional - it defaults to the language configured in Home Assistant.
 
 <table>
 <tr>
@@ -79,6 +87,7 @@ Translated nl: Onder de horizon
 ### `ct_state_attr_translated`
 
 This function returns translated value of an attribute of an entity.
+Third parameter (language) is optional - it defaults to the language configured in Home Assistant.
 
 <table>
 <tr>
@@ -118,6 +127,7 @@ Translated nl: Enkelvoudig
 ### `ct_translated`
 
 This function returns translation for a given key. You can use `ct_all_translations` to check available keys.
+Second parameter (language) is optional - it defaults to the language configured in Home Assistant.
 
 <table>
 <tr>
@@ -155,6 +165,7 @@ Translated nl: Onder de horizon
 ### `ct_all_translations`
 
 This function returns all available translations.
+Parameter (language) is optional - it defaults to the language configured in Home Assistant.
 
 <table>
 <tr>
@@ -223,7 +234,7 @@ below_horizon
 ### `ct_is_available`
 
 This function checks if given entity has an available state.
-By default the following states are treated as not available: `unknown`, `unavailable`, `<empty_text>`, `None`.
+By default, the following states are treated as not available: `unknown`, `unavailable`, `<empty_text>`, `None`.
 It is possible to override this list by providing a second argument.
 
 <table>
@@ -257,24 +268,75 @@ false
 </tr>
 </table>
 
+### `ct_dict_merge`
+
+This function will merge one or more dictionaries (mappings) together into a single dictionary.
+If any key is shared between two or more dictionaries, the value of the key will be the last value passed.
+
+<table>
+<tr>
+<th>
+Input
+</th>
+<th>
+Output
+</th>
+</tr>
+<tr>
+<td>
+
+```yaml
+{% set dict_1 = {'a':1,'b':2,'c':3} %}
+{% set dict_2 = {'d':4,'e':5,'f':6} %}
+{% set dict_3 = {'b':7,'d':8,'g':9} %}
+{{ ct_dict_merge(dict_1, dict_1) }}
+{{ ct_dict_merge(dict_1, dict_2) }}
+{{ ct_dict_merge(dict_2, dict_3) }}
+{{ ct_dict_merge(dict_1, dict_2, dict_3) }}
+```
+
+</td>
+<td> 
+
+```django
+
+
+
+{'a': 1, 'b': 2, 'c': 3}
+{'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5, 'f': 6}
+{'d': 8, 'e': 5, 'f': 6, 'b': 7, 'g': 9}
+{'a': 1, 'b': 7, 'c': 3, 'd': 8, 'e': 5, 'f': 6, 'g': 9}
+```
+
+</td>
+</tr>
+</table>
+
 ## Configuration
 
 To use this integration you have to add following config in `configuration.yaml`:
 
-```yaml
-custom_templates:
-  preload_translations:
-    - en
-    - nl
-```
+* Without additional languages:
+  ```yaml
+  custom_templates:
+  ```
 
-A list of available language tags is available [here](https://github.com/home-assistant/core/blob/master/homeassistant/generated/languages.py), a list of desriptions of language tags is available [here](https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry).
+* With additional languages:
+  ```yaml
+  custom_templates:
+    preload_translations:
+      - en
+      - nl
+  ```
+
+A list of available language tags is available [here](https://github.com/home-assistant/core/blob/master/homeassistant/generated/languages.py), a list of descriptions of language tags is available [here](https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry).
 
 Section `preload_translations` should contain a list of languages you want to use with translations-related functions.
+If it is not provided only a language provided in HA config will be loaded.
 
 ## Installation
 
-Since version v1.3.0 the minimal supported version of Home Assistant is 2024.2.0.
+Since version v1.4.0 the minimal supported version of Home Assistant is 2024.5.0.
 
 ### Using [HACS](https://hacs.xyz/) (recommended)
 
