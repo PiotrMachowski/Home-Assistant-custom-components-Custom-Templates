@@ -231,6 +231,11 @@ below_horizon
 </tr>
 </table>
 
+Optional parameters:
+* `variables` (`dict[string, Any]`) - allows adding additional variables to evaluation context
+* `parse_result` (`bool`, default: `True`) - allows to disable result parsing for internal template evaluation
+* `pass_context` (`bool`, default: `True`) - allows to disable passing external context to evaluation of internal template
+
 ### `ct_is_available`
 
 This function checks if given entity has an available state.
