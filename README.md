@@ -373,7 +373,34 @@ Output
 <td> 
 
 ```
-['area_id', 'categories', 'config_entry_id', 'config_subentry_id', 'created_at', 'device_id', 'disabled_by', 'entity_category', 'entity_id', 'has_entity_name', 'hidden_by', 'icon', 'id', 'labels', 'modified_at', 'name', 'options', 'original_name', 'platform', 'translation_key', 'unique_id', 'aliases', 'capabilities', 'device_class', 'original_device_class', 'original_icon']
+[
+  'area_id',
+  'categories',
+  'config_entry_id',
+  'config_subentry_id',
+  'created_at',
+  'device_id',
+  'disabled_by',
+  'entity_category',
+  'entity_id',
+  'has_entity_name',
+  'hidden_by',
+  'icon',
+  'id',
+  'labels',
+  'modified_at',
+  'name',
+  'options',
+  'original_name',
+  'platform',
+  'translation_key',
+  'unique_id',
+  'aliases',
+  'capabilities',
+  'device_class',
+  'original_device_class',
+  'original_icon'
+]
 ```
 
 </td>
