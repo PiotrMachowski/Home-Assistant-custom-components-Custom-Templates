@@ -3,11 +3,20 @@ from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.translation import async_get_cached_translations
 
 try:
-    from homeassistant.helpers.template.states import _get_state_if_valid, TemplateState
+    from homeassistant.helpers.template.states import (
+        _get_state_if_valid,
+        TemplateState,
+        _RESERVED_NAMES,
+    )
 except ImportError:
     # For HA before 2026.5
-    from homeassistant.helpers.template import _get_state_if_valid, TemplateState
+    from homeassistant.helpers.template import (
+        _get_state_if_valid,
+        TemplateState,
+        _RESERVED_NAMES,
+    )
 
+PATCHED_RESERVED_NAMES = _RESERVED_NAMES
 
 @callback
 def async_translate_state(

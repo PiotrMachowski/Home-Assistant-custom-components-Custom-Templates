@@ -40,7 +40,9 @@ This integration adds possibility to use new functions in Home Assistant Jinja2 
 - `ct_all_translations` - returns all available translations (that can be used with `ct_translated`)
 - `ct_eval` - evaluates text as a template
 - `ct_is_available` - checks if given entity is available
-- `ct_dict_merge` - Merges two or more dictionaries together. 
+- `ct_dict_merge` - merges two or more dictionaries together. 
+- `ct_entity_attr` - returns a value of entity attribute from entity registry (not to be confused with state attribute). 
+- `ct_entity_attrs` - returns list of all available entity attributes from entity registry (not to be confused with state attributes). 
 
 ## Usage
 
@@ -303,10 +305,7 @@ Output
 </td>
 <td> 
 
-```django
-
-
-
+```
 {'a': 1, 'b': 2, 'c': 3}
 {'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5, 'f': 6}
 {'d': 8, 'e': 5, 'f': 6, 'b': 7, 'g': 9}
@@ -316,6 +315,72 @@ Output
 </td>
 </tr>
 </table>
+
+### `ct_entity_attr`
+
+This function returns a value of entity attribute from entity registry.
+To discover available attributes use `ct_entity_attrs` function.
+
+<table>
+<tr>
+<th>
+Input
+</th>
+<th>
+Output
+</th>
+</tr>
+<tr>
+<td>
+
+```yaml
+{{ ct_entity_attr("sensor.light_schedule", "entity_category")}}
+```
+
+</td>
+<td> 
+
+```
+diagnostic
+```
+
+</td>
+</tr>
+</table>
+
+
+### `ct_entity_attrs`
+
+This function returns a list of all available entity attributes from entity registry.
+
+<table>
+<tr>
+<th>
+Input
+</th>
+<th>
+Output
+</th>
+</tr>
+<tr>
+<td>
+
+```yaml
+{{ ct_entity_attrs("sensor.light_schedule")}}
+```
+
+</td>
+<td> 
+
+```
+['area_id', 'categories', 'config_entry_id', 'config_subentry_id', 'created_at', 'device_id', 'disabled_by', 'entity_category', 'entity_id', 'has_entity_name', 'hidden_by', 'icon', 'id', 'labels', 'modified_at', 'name', 'options', 'original_name', 'platform', 'translation_key', 'unique_id', 'aliases', 'capabilities', 'device_class', 'original_device_class', 'original_icon']
+```
+
+</td>
+</tr>
+</table>
+
+
 
 ## Configuration
 
