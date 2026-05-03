@@ -334,7 +334,7 @@ Output
 <td>
 
 ```yaml
-{{ ct_entity_attr("sensor.light_schedule", "entity_category")}}
+{{ ct_entity_attr("sensor.light_schedule", "entity_category") }}
 ```
 
 </td>
@@ -366,7 +366,7 @@ Output
 <td>
 
 ```yaml
-{{ ct_entity_attrs("sensor.light_schedule")}}
+{{ ct_entity_attrs("sensor.light_schedule") }}
 ```
 
 </td>
